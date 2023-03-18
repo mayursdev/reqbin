@@ -18,11 +18,12 @@ app.get("/", (req, res) => {
 
 const allowedRequestMethods = ["GET", "POST"];
 
-const getResponseWithAxios = async ({ url, method, payload }) => {
+const getResponseWithAxios = async ({ url, method, headers, payload }) => {
   try {
     const response = await axios({
-      method,
       url,
+      method,
+      headers,
       data: payload,
     });
     const { data, status } = response;
@@ -38,7 +39,7 @@ const getResponseWithAxios = async ({ url, method, payload }) => {
 
 app.post("/request", async (req, res) => {
   try {
-    const { url, method, payload } = req.body;
+    const { url, method, headers, payload } = req.body;
     if (!url || !method) {
       return res.status(400).json({
         message: "both request method and url is required",
@@ -55,7 +56,12 @@ app.post("/request", async (req, res) => {
       });
     }
 
-    const response = await getResponseWithAxios({ url, method, payload });
+    const response = await getResponseWithAxios({
+      url,
+      method,
+      headers,
+      payload,
+    });
 
     return res.status(200).json({ response, status: 200 });
   } catch (error) {
